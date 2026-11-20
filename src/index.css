@@ -1,0 +1,215 @@
+/* ============================================================
+   ICU Deterioration Radar — Design Tokens & Base Styles
+   ============================================================
+   Tailwind CSS v4 entry point.
+   All semantic colors follow IEC 60601-1-8 alarm-priority
+   conventions. Never rely on color alone — always pair with
+   icon shape + text label.
+   ============================================================ */
+
+@import "tailwindcss";
+
+/* ---- CUSTOM THEME EXTENSIONS ---- */
+@theme {
+  /* Semantic alarm palette (IEC 60601-1-8 inspired)
+     High priority = red, Medium = amber, Low = cyan, Normal = neutral.
+     Checked for deuteranopia/protanopia safe contrast. */
+  --color-alarm-high: #dc2626;
+  --color-alarm-high-muted: #7f1d1d;
+  --color-alarm-high-surface: rgba(220, 38, 38, 0.08);
+  --color-alarm-medium: #d97706;
+  --color-alarm-medium-muted: #78350f;
+  --color-alarm-medium-surface: rgba(217, 119, 6, 0.08);
+  --color-alarm-low: #0891b2;
+  --color-alarm-low-muted: #164e63;
+  --color-alarm-low-surface: rgba(8, 145, 178, 0.06);
+  --color-alarm-normal: #6b7280;
+
+  /* Surface palette — neutral greys, NOT blue-tinted */
+  --color-surface-0: #111214;
+  --color-surface-1: #18191c;
+  --color-surface-2: #1e2023;
+  --color-surface-3: #26282c;
+  --color-surface-4: #2e3035;
+  --color-surface-border: #35373d;
+  --color-surface-border-subtle: #2a2c31;
+
+  /* Text hierarchy */
+  --color-text-primary: #e4e5e7;
+  --color-text-secondary: #9ca0a8;
+  --color-text-muted: #6b7076;
+  --color-text-inverse: #111214;
+
+  /* Functional / accent (not decorative) */
+  --color-focus-ring: #0891b2;
+  --color-row-hover: rgba(255, 255, 255, 0.025);
+  --color-row-selected: rgba(8, 145, 178, 0.06);
+
+  /* Typography */
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', 'Consolas', monospace;
+
+  /* Radii — clinical: square or barely rounded */
+  --radius-sm: 2px;
+  --radius-md: 3px;
+}
+
+/* ---- BASE LAYER ---- */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-surface-0);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.4;
+    overflow-x: hidden;
+  }
+
+  /* High-contrast Clinical Light Theme for brightly lit rooms */
+  .clinical-light {
+    --color-surface-0: #f8fafc;
+    --color-surface-1: #f1f5f9;
+    --color-surface-2: #e2e8f0;
+    --color-surface-3: #cbd5e1;
+    --color-surface-4: #94a3b8;
+    --color-surface-border: #cbd5e1;
+    --color-surface-border-subtle: #e2e8f0;
+
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #334155;
+    --color-text-muted: #64748b;
+    --color-text-inverse: #f8fafc;
+
+    --color-alarm-high: #b91c1c;
+    --color-alarm-high-surface: rgba(185, 28, 28, 0.1);
+    --color-alarm-medium: #b45309;
+    --color-alarm-medium-surface: rgba(180, 83, 9, 0.1);
+    --color-alarm-low: #0e7490;
+    --color-alarm-low-surface: rgba(14, 116, 144, 0.08);
+
+    --color-row-hover: rgba(0, 0, 0, 0.03);
+    --color-row-selected: rgba(14, 116, 144, 0.1);
+  }
+
+  /* Tabular numerals everywhere — prevents jitter on live updates */
+  .font-mono,
+  [data-vital],
+  .tabular-nums {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* Visible focus rings for keyboard nav */
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 1px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface-1);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-surface-3);
+    border-radius: 3px;
+  }
+}
+
+/* ---- UTILITY CLASSES ---- */
+@layer utilities {
+  /* Label style: small, uppercase, letter-spaced, muted */
+  .label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  /* Vital value style: large, bold, tabular */
+  .vital-value {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* Risk edge bar — left border indicating severity */
+  .risk-bar-high {
+    border-left: 3px solid var(--color-alarm-high);
+  }
+  .risk-bar-medium {
+    border-left: 3px solid var(--color-alarm-medium);
+  }
+  .risk-bar-low {
+    border-left: 3px solid var(--color-alarm-low);
+  }
+  .risk-bar-normal {
+    border-left: 3px solid var(--color-surface-border);
+  }
+
+  /* Hairline divider */
+  .hairline {
+    border-color: var(--color-surface-border-subtle);
+  }
+
+  /* Alert pulse — single quiet pulse, then stops */
+  @keyframes alert-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  .alert-pulse-once {
+    animation: alert-pulse 1.5s ease-in-out 1;
+  }
+}
+
+/* ---- RANGE INPUT (simulation scrubber) ---- */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: var(--color-surface-3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--color-text-secondary);
+  border: 1px solid var(--color-surface-border);
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: var(--color-text-primary);
+}
